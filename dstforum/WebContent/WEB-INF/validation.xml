@@ -1,0 +1,193 @@
+<!DOCTYPE form-validation PUBLIC
+          "-//Apache Software Foundation//DTD Commons Validator Rules Configuration 1.1.3//EN"
+          "http://jakarta.apache.org/commons/dtds/validator_1_1_3.dtd">
+
+
+<form-validation>
+   <global>
+      <constant>
+        <constant-name>phone</constant-name>
+        <constant-value>(^\d{3,4}\-\d{7,8}$)|^\d{11}$</constant-value>
+      </constant>
+      <constant>
+        <constant-name>email</constant-name>
+        <constant-value>\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*</constant-value>
+      </constant>
+      <constant>
+        <constant-name>OICQ</constant-name>
+        <constant-value>^\d{1,}$</constant-value>
+      </constant>
+   </global>
+   
+   <formset>
+      <!-- 验证，登录的配置 -->
+      <form name="/user/login">
+          <field property="userName" depends="required,maxlength">	          
+	          <arg key="用户名" position="0" resource="false"/>
+	          <arg name="maxlength" key="${var:maxlength}" resource="false" position="1"/>
+	          <var>
+                  <var-name>maxlength</var-name>
+                  <var-value>10</var-value>
+              </var>
+          </field>
+          <field property="userPassword" depends="required,maxlength">
+	          <arg key="密码" position="0" resource="false"/>
+	          <arg name="maxlength" key="${var:maxlength}" resource="false" position="1"/>
+	          <var>
+                  <var-name>maxlength</var-name>
+                  <var-value>10</var-value>
+              </var>
+          </field>          
+      </form>
+      <!-- 验证，搜索的配置 -->  
+      <form name="/user/search">
+          <field property="sqlvalue" depends="required">	          
+	          <arg key="关键字" position="0" resource="false"/>
+          </field>          
+      </form>      
+      <!-- 验证，发表帖子的配置 --> 
+      <form name="bbsForm">
+          <field property="bbsTitle" depends="required,maxlength">	          
+	          <arg key="发帖主题" position="0" resource="false"/>
+	          <arg name="maxlength" key="${var:maxlength}" resource="false" position="1"/>
+	          <var>
+                  <var-name>maxlength</var-name>
+                  <var-value>35</var-value>
+              </var>
+          </field>
+          <field property="bbsContent" depends="required,maxlength">
+	          <arg key="发帖内容" position="0" resource="false"/>
+	          <arg name="maxlength" key="${var:maxlength}" resource="false" position="1"/>
+	          <var>
+                  <var-name>maxlength</var-name>
+                  <var-value>1000</var-value>
+              </var>
+          </field>          
+      </form>
+      <!-- 验证，回复帖子的配置 --> 
+      <form name="/needLogin/answerBbs">
+          <field property="bbsAnswerTitle" depends="required,maxlength">	          
+	          <arg key="回复主题" position="0" resource="false"/>
+	          <arg name="maxlength" key="${var:maxlength}" resource="false" position="1"/>
+	          <var>
+                  <var-name>maxlength</var-name>
+                  <var-value>35</var-value>
+              </var>
+          </field>
+          <field property="bbsAnswerContent" depends="required,maxlength">
+	          <arg key="回复内容" position="0" resource="false"/>
+	          <arg name="maxlength" key="${var:maxlength}" resource="false" position="1"/>
+	          <var>
+                  <var-name>maxlength</var-name>
+                  <var-value>1000</var-value>
+              </var>
+          </field>          
+      </form>
+      <!-- 验证，用户注册/修改的配置 -->
+      <form name="userForm">
+          <field property="userName" depends="required,maxlength">	          
+	          <arg key="用户名" position="0" resource="false"/>
+	          <arg name="maxlength" key="${var:maxlength}" resource="false" position="1"/>
+	          <var>
+                  <var-name>maxlength</var-name>
+                  <var-value>10</var-value>
+              </var>
+          </field>
+          <field property="userPassword" depends="required,maxlength">
+	          <arg key="用户密码" position="0" resource="false"/>
+	          <arg name="maxlength" key="${var:maxlength}" resource="false" position="1"/>
+	          <var>
+                  <var-name>maxlength</var-name>
+                  <var-value>10</var-value>
+              </var>
+          </field>
+          <field property="aginPassword" depends="required,maxlength">
+	          <arg key="确认密码" position="0" resource="false"/>
+	          <arg name="maxlength" key="${var:maxlength}" resource="false" position="1"/>
+	          <var>
+                  <var-name>maxlength</var-name>
+                  <var-value>10</var-value>
+              </var>
+          </field>
+          <field property="userPhone" depends="required,mask">
+	          <arg key="联系电话" position="0" resource="false"/>
+	          <var>
+                  <var-name>mask</var-name>
+                  <var-value>${phone}</var-value>
+              </var>
+          </field>
+          <field property="userOICQ" depends="required,mask,maxlength">
+	          <arg key="OICQ" position="0" resource="false"/>
+              <arg name="maxlength" key="${var:maxlength}" resource="false" position="1"/>
+	          <var>
+                  <var-name>mask</var-name>
+                  <var-value>${OICQ}</var-value>
+              </var>
+	          <var>
+                  <var-name>maxlength</var-name>
+                  <var-value>14</var-value>
+              </var>
+          </field>
+          <field property="userEmail" depends="required,mask">
+	          <arg key="E-mial" position="0" resource="false"/>
+	          <var>
+                  <var-name>mask</var-name>
+                  <var-value>${email}</var-value>
+              </var>
+          </field>
+          <field property="userFrom" depends="required,maxlength">
+	          <arg key="来自哪里" position="0" resource="false"/>
+	          <var>
+                  <var-name>maxlength</var-name>
+                  <var-value>100</var-value>
+              </var>
+          </field>                                                  
+      </form>
+      <!-- 验证，后台-修改/添加论坛类别的配置 --> 
+      <form name="classForm">
+          <field property="className" depends="required,maxlength">	          
+	          <arg key="论坛类别名称" position="0" resource="false"/>
+	          <arg name="maxlength" key="${var:maxlength}" resource="false" position="1"/>
+	          <var>
+                  <var-name>maxlength</var-name>
+                  <var-value>20</var-value>
+              </var>
+          </field>
+          <field property="classIntro" depends="required,maxlength">
+	          <arg key="论坛介绍" position="0" resource="false"/>
+	          <arg name="maxlength" key="${var:maxlength}" resource="false" position="1"/>
+	          <var>
+                  <var-name>maxlength</var-name>
+                  <var-value>100</var-value>
+              </var>
+          </field>          
+      </form>
+      <!-- 验证，后台-修改/添加版面的配置 -->      
+      <form name="boardForm">
+          <field property="boardName" depends="required,maxlength">	          
+	          <arg key="版面名称" position="0" resource="false"/>
+	          <arg name="maxlength" key="${var:maxlength}" resource="false" position="1"/>
+	          <var>
+                  <var-name>maxlength</var-name>
+                  <var-value>20</var-value>
+              </var>
+          </field>
+          <field property="boardMaster" depends="required,maxlength">	          
+	          <arg key="版主" position="0" resource="false"/>
+	          <arg name="maxlength" key="${var:maxlength}" resource="false" position="1"/>
+	          <var>
+                  <var-name>maxlength</var-name>
+                  <var-value>10</var-value>
+              </var>
+          </field>          
+          <field property="boardPcard" depends="required,maxlength">
+	          <arg key="版面公告" position="0" resource="false"/>
+	          <arg name="maxlength" key="${var:maxlength}" resource="false" position="1"/>
+	          <var>
+                  <var-name>maxlength</var-name>
+                  <var-value>100</var-value>
+              </var>
+          </field>          
+      </form>
+   </formset>
+</form-validation>

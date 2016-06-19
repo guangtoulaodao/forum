@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN" "http://struts.apache.org/dtds/struts-config_1_2.dtd">
+
+<struts-config>
+  <form-beans>
+      <form-bean name="searchForm" type="com.yxq.actionform.SearchForm"/>
+      <form-bean name="jumpForm" type="com.yxq.actionform.JumpForm"/>
+      <form-bean name="ableForm" type="com.yxq.actionform.AbleForm"/>
+      
+      <form-bean name="classForm" type="com.yxq.actionform.ClassForm"/>
+      <form-bean name="boardForm" type="com.yxq.actionform.BoardForm"/>
+      <form-bean name="bbsForm" type="com.yxq.actionform.BbsForm"/>
+      <form-bean name="bbsAnswerForm" type="com.yxq.actionform.BbsAnswerForm"/>
+      <form-bean name="userForm" type="com.yxq.actionform.UserForm"/>
+  </form-beans>
+  <action-mappings>
+      <!-- 进入首页 -->
+      <action
+             	path="/goIndex"
+             	type="com.yxq.action.IndexAction">
+             	<forward name="success" path="/view/indexTemp.jsp"/>
+      </action>
+      <!-- 登录(超链接触发，判断用户是否已经登录) -->
+      <action
+             	path="/user/isUserLogin"
+             	type="com.yxq.action.LogXAction"
+             	parameter="method">
+             	<forward name="noLogin" path="/pages/login.jsp"/>						<!-- 没有登录返回的视图 -->
+             	<forward name="FhaveLogin" path="/pages/message.jsp"/>         			<!-- 已经登录返回的视图 -->
+      </action>
+      <!-- 进入后台(超链接触发，判断用户是否已经登录，若登录，则判断登录的用户是否是管理员) -->
+      <action
+             	path="/user/isAdminLogin"
+             	type="com.yxq.action.LogXAction"
+             	parameter="method">
+             	<forward name="noLogin" path="/pages/login.jsp"/>                       <!-- 没有登录返回的视图 -->
+             	<forward name="BhaveLogin" path="/pages/admin/view/adminTemp.jsp"/>		<!-- 已经登录返回的视图 -->
+             	<forward name="noAble" path="/pages/message.jsp"/>             			<!-- 无权限进入后台返回的视图 -->
+      </action>      
+      <!-- 登录(提交表单触发) -->
+      <action
+             	path="/user/login"
+             	type="com.yxq.action.LogXAction"
+             	parameter="method"
+             	name="userForm"
+             	validate="true"
+             	input="/pages/login.jsp"
+             	scope="request">
+             	<forward name="success_user" path="/index.jsp"/>
+             	<forward name="success_admin" path="/pages/admin/view/adminTemp.jsp"/>
+             	<forward name="fault" path="/pages/login.jsp"/>
+      </action>
+      <!-- 注销 -->
+      <action
+      			path="/user/logout"
+      			type="com.yxq.action.LogXAction"
+      			parameter="method">
+      			<forward name="logout" path="/goIndex.do"/>
+      </action>    
+      <!-- 用户注册 -->      
+      <action
+                path="/user/reg"
+                type="com.yxq.action.LogXAction"
+                parameter="method"
+                name="userForm"
+                scope="request"
+                validate="true"
+                input="/view/indexTemp.jsp">
+                <forward name="result" path="/view/indexTemp.jsp"/>
+      </action>
+      <!-- 搜索帖子 -->
+      <action
+             	path="/user/search"
+             	type="com.yxq.action.SearchAction"
+             	name="searchForm"
+             	validate="true"
+             	input="/view/indexTemp.jsp"
+             	scope="request">
+             	<forward name="success" path="/view/indexTemp.jsp"/>
+      </action>
+      <!-- 列表显示某个版面的所有根帖 -->
+      <action 
+            	path="/user/listShow"
+             	type="com.yxq.action.BbsAction"
+             	parameter="method"
+             	validate="false">
+             	<forward name="success" path="/view/indexTemp.jsp"/>
+      </action>                     
+      <!-- 版面跳转 -->
+      <action
+             	path="/user/jumpBoard"
+             	name="jumpForm"
+             	scope="request"
+             	forward="/user/listShow.do"/>             
+      <!-- 查看根帖 -->
+      <action
+             	path="/user/openShow"
+             	type="com.yxq.action.BbsAction"
+             	parameter="method">
+            	<forward name="success" path="/view/indexTemp.jsp"/>
+      </action>      
+      <!-- 列表显示精华帖子 -->      
+      <action
+            	path="/user/goodListShow"
+            	type="com.yxq.action.BbsAction"
+            	parameter="method"
+            	validate="false">
+             	<forward name="success" path="/view/indexTemp.jsp"/>
+      </action>
+      <!-- 查看帖子的发表者的详细信息 --> 
+      <action
+                path="/bbs/user/getUserSingle"
+                type="com.yxq.action.BbsAction"
+                parameter="method">
+                <forward name="success" path="/view/indexTemp.jsp"/>
+                <forward name="errr" path="/pages/message.jsp"/>
+      </action> 
+                 
+  <!-- *************以下配置登录后的用户操作************* -->  
+      <!-- 列表显示我的帖子 -->
+      <action
+             	path="/needLogin/my/listShow"
+             	type="com.yxq.action.OwnAction"
+             	parameter="method"
+             	validate="false">
+             	<forward name="success" path="/view/indexTemp.jsp"/>
+      </action>  
+      
+  <!-- *************以下配置管理员的操作************* -->
+      <!-- 前台-管理员置顶帖子、设为精华帖-->
+      <action 
+                path="/needLogin/admin/doTopGood"
+                type="com.yxq.action.AdminAction"
+                parameter="method">
+                <forward name="success" path="/user/openShow.do?method=openShow"/>
+                <forward name="error" path="/view/indexTemp.jsp"/>                
+      </action>
+      <!-- 前台-管理员删除回复帖子 -->
+      <action
+                path="/needLogin/admin/deleteAnswer"
+                type="com.yxq.action.AdminAction"
+                parameter="method">
+                <forward name="success" path="/user/openShow.do?method=openShow"/>
+                <forward name="error" path="/view/indexTemp.jsp"/>                
+      </action>
+      <!-- 后台-管理员列表显示论坛类别 -->
+      <action
+                path="/needLogin/admin/getClassList"
+                type="com.yxq.action.AdminAction"
+                parameter="method">
+                <forward name="success" path="/pages/admin/view/adminTemp.jsp"/>
+      </action>
+      <!-- 后台-管理员修改某个论坛类别 -->
+      <action
+      			path="/needLogin/admin/modifyClass"
+      			type="com.yxq.action.AdminAction"
+      			parameter="method"
+      			name="classForm"
+      			scope="request"
+      			validate="true"
+      			input="/pages/admin/view/adminTemp.jsp">
+      			<forward name="showModifyJSP" path="/pages/admin/view/adminTemp.jsp"/>      			
+      			<forward name="success" path="/needLogin/admin/getClassList.do?method=getClassList"/>      			
+      			<forward name="error" path="/pages/admin/view/adminTemp.jsp"/>      			      			
+      </action>      
+      <!-- 后台-管理员添加论坛类别 -->
+      <action
+                path="/needLogin/admin/addClass"
+                type="com.yxq.action.AdminAction"
+                name="classForm"
+                scope="request"
+                parameter="method"
+                validate="true"
+                input="/pages/admin/view/adminTemp.jsp">
+                <forward name="result" path="/pages/admin/view/adminTemp.jsp"/>
+      </action>
+      <!-- 后台-管理员删除论坛类别 -->
+      <action
+                path="/needLogin/admin/deleteClass"
+                type="com.yxq.action.AdminAction"
+                parameter="method">
+                <forward name="success" path="/needLogin/admin/getClassList.do?method=getClassList"/>
+                <forward name="error" path="/pages/admin/view/adminTemp.jsp"/>
+      </action>
+      <!-- 后台-管理员列表显示版面 -->      
+      <action
+                path="/needLogin/admin/getBoardList"
+                type="com.yxq.action.AdminAction"
+                name="classForm"
+                scope="request"
+                parameter="method"
+                validate="false">
+                <forward name="success" path="/pages/admin/view/adminTemp.jsp"/>
+      </action>    
+      <!-- 后台-管理员修改某个版面 --> 
+      <action
+      			path="/needLogin/admin/modifyBoard"
+      			type="com.yxq.action.AdminAction"
+      			parameter="method"
+      			name="boardForm"
+      			scope="request"
+      			validate="true"
+      			input="/pages/admin/view/adminTemp.jsp">
+      			<forward name="showModifyJSP" path="/pages/admin/view/adminTemp.jsp"/>
+      			<forward name="success" path="/needLogin/admin/getBoardList.do?method=getBoardList&amp;type=show"/>      			
+      			<forward name="error" path="/pages/admin/view/adminTemp.jsp"/>
+      </action>      
+      <!-- 后台-管理员添加版面 -->
+      <action
+                path="/needLogin/admin/addBoard"
+                type="com.yxq.action.AdminAction"
+                name="boardForm"
+                scope="request"
+                parameter="method"
+                validate="true"
+                input="/pages/admin/view/adminTemp.jsp">
+                <forward name="result" path="/pages/admin/view/adminTemp.jsp"/>
+      </action>      
+      <!-- 后台-管理员删除版面 -->
+      <action
+                path="/needLogin/admin/deleteBoard"
+                type="com.yxq.action.AdminAction"
+                parameter="method">
+                <forward name="success" path="/needLogin/admin/getBoardList.do?method=getBoardList&amp;type=show"/>
+                <forward name="error" path="/pages/admin/view/adminTemp.jsp"/>
+      </action>
+      <!-- 后台-列表查看用户列表 -->
+      <action
+                path="/needLogin/admin/getUserList"
+                type="com.yxq.action.AdminAction"
+                parameter="method"
+                name="ableForm"
+                scope="request"
+                validate="false">
+                <forward name="success" path="/pages/admin/view/adminTemp.jsp"/>
+      </action>
+      <!-- 后台-管理员修改用户 -->
+      <action
+      			path="/needLogin/admin/modifyUser"
+      			type="com.yxq.action.AdminAction"
+      			parameter="method"
+      			name="userForm"
+      			scope="request"
+      			validate="true"
+      			input="/pages/admin/view/adminTemp.jsp">
+      			<forward name="showModifyJSP" path="/pages/admin/view/adminTemp.jsp"/>
+      			<forward name="success" path="/needLogin/admin/getUserList.do?method=getUserList&amp;type=show"/>
+                <forward name="error" path="/pages/admin/view/adminTemp.jsp"/>
+      </action>
+      <!-- 后台-删除用户 -->
+      <action
+                path="/needLogin/admin/deleteUser"
+                type="com.yxq.action.AdminAction"
+                parameter="method">
+                <forward name="success" path="/needLogin/admin/getUserList.do?method=getUserList&amp;type=show"/>
+                <forward name="error" path="/pages/admin/view/adminTemp.jsp"/>                
+      </action>
+                      
+  <!-- *************以下配置登录后,用户/管理员都可进行的操作************* -->
+      <!-- 发表帖子 -->       
+      <action
+             	path="/needLogin/addBbs"
+             	type="com.yxq.action.BbsAction"
+             	parameter="method"
+             	name="bbsForm"
+             	scope="request"
+             	validate="true"
+             	input="/view/indexTemp.jsp">
+             	<forward name="showAddJSP" path="/view/indexTemp.jsp"/>
+             	<forward name="success" path="/user/listShow.do?method=rootListShow"/>
+             	<forward name="error" path="/view/indexTemp.jsp"/>
+      </action>
+      <!-- 回复帖子 --> 
+      <action
+             	path="/needLogin/answerBbs"
+             	type="com.yxq.action.BbsAction"
+             	parameter="method"
+             	name="bbsAnswerForm"
+             	scope="request"
+             	validate="true"
+             	input="/view/indexTemp.jsp">
+             	<forward name="success" path="/user/openShow.do?method=openShow"/>
+             	<forward name="error" path="/view/indexTemp.jsp"/>
+      </action>
+      <!-- 将帖子提前 -->
+      <action
+             	path="/needLogin/firstBbs"
+             	type="com.yxq.action.BbsAction"
+             	parameter="method">
+             	<forward name="success" path="/user/openShow.do?method=openShow"/>
+             	<forward name="error" path="/view/indexTemp.jsp"/>
+      </action>
+      <!-- 删除根帖 -->
+      <action
+             	path="/needLogin/deleteRoot"
+             	type="com.yxq.action.BbsAction"
+             	parameter="method">
+             	<forward name="success" path="/user/listShow.do?method=rootListShow"/>
+             	<forward name="error" path="/view/indexTemp.jsp"/>
+      </action>
+  </action-mappings>
+  <controller processorClass="com.yxq.tools.ToChinese"/>
+  <message-resources parameter="com.yxq.Messages" />
+  <plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+	  <set-property 
+           property="pathnames" 
+           value="/WEB-INF/validator-rules.xml,/WEB-INF/validation.xml"/>
+  </plug-in>  
+</struts-config>
+
